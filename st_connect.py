@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_lottie import st_lottie
 from streamlit.connections import ExperimentalBaseConnection
 from deta import Deta
 from datetime import datetime, timedelta
@@ -227,7 +228,7 @@ def main():
     # Input Form
 
     with st.sidebar:
-        st.subheader("Log Today's Workout")
+        st.subheader("Log Today's Workout :muscle: ")
         with st.form(key="workout_tracker",clear_on_submit=True):
             length = st.slider("How many mins (approx) did you work out?",10,180,step=10,value=round(df_all["length"].mean()/10)*10)
             areas_worked_out = st.multiselect("What areas did you target?",["chest","abdominals","biceps","triceps","calves","quadriceps","glutes","traps"])
@@ -239,12 +240,11 @@ def main():
 
     # Title Section
 
-    blank_col_left,emoji_col,blank_col_right = st.columns([3,1,3])
-    with emoji_col:
-        st.header(":muscle:")
-    blank_col_left,title_col,blank_col_right = st.columns([1,2,1])
+    blank_col_left,title_col,emoji_col,blank_col_right = st.columns([2,2,2,2])
     with title_col:
         st.title("Workout Data Tracker")
+    with emoji_col:
+        st_lottie("https://lottie.host/1018fd4f-b558-416a-9867-ac6f70c81f22/Ocs5u7DyrG.json")
     st.title("")
 
     # Recommendation Panel
