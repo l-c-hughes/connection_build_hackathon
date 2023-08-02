@@ -24,7 +24,6 @@ class BaseConn(ExperimentalBaseConnection[Deta.Base]):
         return self._connect()
 
     @st.cache_data(ttl="1d",show_spinner=False)
-
     def get_data(_self, key):
         cursor = _self._connect()
         return cursor.get(key)
@@ -48,13 +47,15 @@ class ApiNinjasConn(ExperimentalBaseConnection):
 
     def _get_headers(self):
         return {"X-Api-Key": f"{self.api_key}"}
-
-    def get_response(self, endpoint):
+    
+    @st.cache_data(ttl=604800)
+    def get_response(_self, endpoint):
         url = f"https://api.api-ninjas.com/v1/exercises?muscle={endpoint}"
-        headers = self._get_headers()
+        headers = _self._get_headers()
         response = requests.get(url, headers=headers)
+        idx = random.randint(0, 9)
         if response.status_code == requests.codes.ok:
-            return response.json()
+            return response.json()[idx]
         else:
             print("Error:", response.status_code, response.text)
 
@@ -222,31 +223,36 @@ def main():
     )
 
     # APP LAYOUT
-
-    blank_col_left,title_col,blank_col_right = st.columns(3)
+    blank_col_left,emoji_col,blank_col_right = st.columns([3,1,3])
+    with emoji_col:
+        st.header(":muscle:")
+    blank_col_left,title_col,blank_col_right = st.columns([1,2,1])
     with title_col:
-        st.title("Workout Data Tracker :muscle:")
+        st.title("Workout Data Tracker")
     st.title("")
 
     # Input Form Panel
 
     with st.container():
-
-        with st.expander("Log Today's Workout",expanded=False):
-            with st.form(key="workout_tracker",clear_on_submit=True):
-                length = st.slider("How many mins (approx) did you work out?",10,180,step=10,value=round(df_all["length"].mean()/10)*10)
-                areas_worked_out = st.multiselect("What areas did you target?",["chest","abdominals","biceps","triceps","calves","quadriceps","glutes","traps"])
-                save = st.form_submit_button("Save & Log")
-                if save:
-                    date = datetime.now().date()
-                    log_workout(date, length, areas_worked_out)
-                    st.write(f"Workout for {date} logged. Well done!")
+        blank_col_left,formcol,blank_col_right = st.columns([1,3,1])
+        with formcol:
+            with st.expander("Log Today's Workout",expanded=False):
+                with st.form(key="workout_tracker",clear_on_submit=True):
+                    length = st.slider("How many mins (approx) did you work out?",10,180,step=10,value=round(df_all["length"].mean()/10)*10)
+                    areas_worked_out = st.multiselect("What areas did you target?",["chest","abdominals","biceps","triceps","calves","quadriceps","glutes","traps"])
+                    save = st.form_submit_button("Save & Log")
+                    if save:
+                        date = datetime.now().date()
+                        log_workout(date, length, areas_worked_out)
+                        st.write(f"Workout for {date} logged. Well done!")
+        st.title("")
 
     # Recommendation Panel
 
-    idx = random.randint(0, 9)
     min_area = cat_df["areas_worked_out"].value_counts().idxmin()
-    suggest = api.get_response(min_area)[idx]
+    suggest = api.get_response(min_area)
+    emoji_dict = {"core":"🚣‍♂️","upper body":"🏋️","lower body":"🚴"}
+    area_emoji = categorize_area(suggest["muscle"])
 
     with st.container():
         st.header("Next Workout")
@@ -256,16 +262,22 @@ def main():
             st.subheader("Areas Most Targeted:")
             st.dataframe(iso_frame)
         with recommendation:
-            st.subheader("Try This:")
-            if suggest is not None:
-                st.markdown(suggest["name"])
-                st.caption(f'Area Targeted: {suggest["muscle"]}')
-                st.caption(f'Equipment Used: {suggest["equipment"]}')
-                st.caption(f'Difficulty: {suggest["difficulty"]}')
-                with st.expander("Instructions"):
-                    st.write(suggest["instructions"])
-            else:
-                st.write("No recommendation available.")
+            tablecol,buttoncol = st.columns([2,1])
+            with tablecol:
+                st.subheader(f"Try This: {emoji_dict[area_emoji]}")
+                if suggest is not None:
+                    st.markdown(suggest["name"])
+                    st.caption(f'Area Targeted: {suggest["muscle"]}')
+                    st.caption(f'Equipment Used: {suggest["equipment"]}')
+                    st.caption(f'Difficulty: {suggest["difficulty"]}')
+                    with st.expander("Instructions"):
+                        st.write(suggest["instructions"])
+                else:
+                    st.write("No recommendation available.")
+            with buttoncol:
+                st.header(" ")
+                if st.button("Get New Suggestion"):
+                    api.get_response.clear()
     
     # Analytics Panel
 
