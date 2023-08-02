@@ -111,6 +111,7 @@ def main():
     week_area.add_trace(go.Scatter(x=now_week_cum["date"], y=now_week_cum["length"],line_color=app_palette[1],
                             fill="tozeroy",mode="lines",opacity = 0.5))
     week_area.update_layout(
+        height=300,
         margin=dict(t=0),
         xaxis=dict(showgrid=False),
         xaxis_title="Day",
@@ -135,6 +136,7 @@ def main():
     last_week_area.add_trace(go.Scatter(x=last_week_cum["date"], y=last_week_cum["length"], line_color=app_palette[3],
                             fill="tozeroy",mode="lines",opacity = 0.5))
     last_week_area.update_layout(
+        height=300,
         margin=dict(t=0),
         xaxis=dict(showgrid=False),
         xaxis_title="Day",
@@ -162,6 +164,7 @@ def main():
     month_fig.update_traces(marker_color=app_palette[1], opacity=1,name="Workout")
 
     month_fig.update_layout(
+        height=400,
         margin=dict(t=0),
         xaxis=dict(showgrid=False),
         xaxis_title="Day",
@@ -193,6 +196,7 @@ def main():
     last_month_fig.update_traces(marker_color=app_palette[3], opacity=1,name="Workout")
 
     last_month_fig.update_layout(
+        height=400,
         margin=dict(t=0),
         xaxis=dict(showgrid=False),
         xaxis_title="Day",
