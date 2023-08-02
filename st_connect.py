@@ -152,8 +152,7 @@ def main():
     month_df = df_all[df_all["date"].isin(month_dates)]
     month_df = pd.DataFrame({"date":month_dates})
     month_df = month_df.merge(df_all, on="date", how="left")
-
-    month_df["length"] = pd.to_numeric(month_df["length"], errors="coerce")
+    month_df = month_df[["date","length"]]
     month_df["length"] = month_df["length"].fillna(0)
 
     month_fig = go.Figure()
@@ -184,8 +183,7 @@ def main():
     last_month_df = df_all[df_all["date"].isin(last_month_dates)]
     last_month_df = pd.DataFrame({"date":last_month_dates})
     last_month_df = last_month_df.merge(df_all, on="date", how="left")
-
-    last_month_df["length"] = pd.to_numeric(last_month_df["length"], errors="coerce")
+    last_month_df = last_month_df[["date","length"]]
     last_month_df["length"] = last_month_df["length"].fillna(0)
 
     last_month_fig = go.Figure()
