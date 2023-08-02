@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_lottie import st_lottie
 from streamlit.connections import ExperimentalBaseConnection
 from deta import Deta
 from datetime import datetime, timedelta
@@ -248,7 +247,7 @@ def main():
     with title_col:
         st.title("Workout Data Tracker")
     with emoji_col:
-        st_lottie("https://lottie.host/1018fd4f-b558-416a-9867-ac6f70c81f22/Ocs5u7DyrG.json")
+        st.title(":muscle:")
     st.title("")
 
     # Recommendation Panel
