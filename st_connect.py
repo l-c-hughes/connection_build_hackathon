@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import random
 import requests
 
-app_palette = ["#f6d0b1","#85ffc7","#4281a4","#b2abf2"]
+app_palette = ["#f7f7fe","#85ffc7","#4281a4","#b2abf2"]
 
 st.set_page_config(page_title="Workout Data Tracker",page_icon=":muscle:",layout="wide")
 
@@ -152,6 +152,8 @@ def main():
     month_df = df_all[df_all["date"].isin(month_dates)]
     month_df = pd.DataFrame({"date":month_dates})
     month_df = month_df.merge(df_all, on="date", how="left")
+
+    month_df["length"] = pd.to_numeric(month_df["length"], errors="coerce")
     month_df["length"] = month_df["length"].fillna(0)
 
     month_fig = go.Figure()
@@ -182,6 +184,8 @@ def main():
     last_month_df = df_all[df_all["date"].isin(last_month_dates)]
     last_month_df = pd.DataFrame({"date":last_month_dates})
     last_month_df = last_month_df.merge(df_all, on="date", how="left")
+
+    last_month_df["length"] = pd.to_numeric(last_month_df["length"], errors="coerce")
     last_month_df["length"] = last_month_df["length"].fillna(0)
 
     last_month_fig = go.Figure()
@@ -306,32 +310,6 @@ def main():
             hrs4, mins4 = format_time(last_month_df["length"].sum())
             st.metric(label='Workout Time',value=f"{hrs4}H {mins4}M")              
         st.plotly_chart(last_month_fig,use_container_width=True,config={'displayModeBar': False})
-
-    # This Week tab, This Month tab
-    # Bar chart for length of workout by day (WEEK)
-    # Date Select to filter week
-    # Area Chart for length of workout by day (MONTH)
-    # Date select to filter month
-    # Workout Emoji Isotype
-    # Time Worked Out Metric
-    # Avg Satisfaction
-    # Area Chart for this week compared to this month
-
-    ###
-    # PLOT WORKOUT LENGTHS FOR LAST WEEK
-
-
-    # muscle = 'biceps'
-    
-    # api_url = 'https://api.api-ninjas.com/v1/exercises?muscle={}'.format(muscle)
-    # response = requests.get(api_url, headers={'X-Api-Key': 'YOUR_API_KEY'})
-    # if response.status_code == requests.codes.ok:
-    #     print(response.text)
-    # else:
-    #     print("Error:", response.status_code, response.text)
-
-    # Optional: Link to API to recommend a workout
-    # result = deta_conn.get_data("15:18:00 27/07/2023")
 
 if __name__ == "__main__":
     main()
