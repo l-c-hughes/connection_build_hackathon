@@ -243,7 +243,7 @@ def main():
 
     # Title Section
 
-    blank_col_left,title_col,emoji_col,blank_col_right = st.columns([2,2,2,2])
+    blank_col_left,title_col,emoji_col,blank_col_right = st.columns([2,3,1,2])
     with title_col:
         st.title("Workout Data Tracker")
     with emoji_col:
