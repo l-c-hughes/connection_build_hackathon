@@ -223,6 +223,22 @@ def main():
     )
 
     # APP LAYOUT
+
+    # Input Form
+
+    with st.sidebar:
+        st.subheader("Log Today's Workout")
+        with st.form(key="workout_tracker",clear_on_submit=True):
+            length = st.slider("How many mins (approx) did you work out?",10,180,step=10,value=round(df_all["length"].mean()/10)*10)
+            areas_worked_out = st.multiselect("What areas did you target?",["chest","abdominals","biceps","triceps","calves","quadriceps","glutes","traps"])
+            save = st.form_submit_button("Save & Log")
+            if save:
+                date = datetime.now().date()
+                log_workout(date, length, areas_worked_out)
+                st.write(f"Workout for {date} logged. Well done!")
+
+    # Title Section
+
     blank_col_left,emoji_col,blank_col_right = st.columns([3,1,3])
     with emoji_col:
         st.header(":muscle:")
@@ -230,22 +246,6 @@ def main():
     with title_col:
         st.title("Workout Data Tracker")
     st.title("")
-
-    # Input Form Panel
-
-    with st.container():
-        blank_col_left,formcol,blank_col_right = st.columns([1,3,1])
-        with formcol:
-            with st.expander("Log Today's Workout",expanded=False):
-                with st.form(key="workout_tracker",clear_on_submit=True):
-                    length = st.slider("How many mins (approx) did you work out?",10,180,step=10,value=round(df_all["length"].mean()/10)*10)
-                    areas_worked_out = st.multiselect("What areas did you target?",["chest","abdominals","biceps","triceps","calves","quadriceps","glutes","traps"])
-                    save = st.form_submit_button("Save & Log")
-                    if save:
-                        date = datetime.now().date()
-                        log_workout(date, length, areas_worked_out)
-                        st.write(f"Workout for {date} logged. Well done!")
-        st.title("")
 
     # Recommendation Panel
 
@@ -257,27 +257,27 @@ def main():
     with st.container():
         st.header("Next Workout")
         st.write("")
-        breakdown,recommendation=st.columns(2)
+        breakdown,recommendation=st.columns([2,1])
         with breakdown:
+            st.write("")
+            st.write("")
+            st.write("")
             st.subheader("Areas Most Targeted:")
             st.dataframe(iso_frame)
         with recommendation:
-            tablecol,buttoncol = st.columns([2,1])
-            with tablecol:
-                st.subheader(f"Try This: {emoji_dict[area_emoji]}")
-                if suggest is not None:
-                    st.markdown(suggest["name"])
-                    st.caption(f'Area Targeted: {suggest["muscle"]}')
-                    st.caption(f'Equipment Used: {suggest["equipment"]}')
-                    st.caption(f'Difficulty: {suggest["difficulty"]}')
-                    with st.expander("Instructions"):
-                        st.write(suggest["instructions"])
-                else:
-                    st.write("No recommendation available.")
-            with buttoncol:
-                st.header(" ")
-                if st.button("Get New Suggestion"):
-                    api.get_response.clear()
+            st.subheader(f"Try This: {emoji_dict[area_emoji]}")
+            if suggest is not None:
+                st.markdown(f'**{suggest["name"]}**'.title())
+                st.caption(f'Area Targeted: {suggest["muscle"]}'.title())
+                st.caption(f'Equipment Used: {suggest["equipment"]}'.title())
+                st.caption(f'Difficulty: {suggest["difficulty"]}'.title())
+                with st.expander("Instructions"):
+                    st.write(suggest["instructions"])
+            else:
+                st.write("No recommendation available.")
+            if st.button("Get New Suggestion"):
+                api.get_response.clear()
+
     
     # Analytics Panel
 
