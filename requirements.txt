@@ -1,3 +1,2 @@
 deta==1.2.0
 plotly==5.9.0
-streamlit-lottie==0.0.5
